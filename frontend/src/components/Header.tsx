@@ -38,7 +38,7 @@ export default function Header() {
           />
         </button>
       </div>
-      <a href={"/"} className="p2 ">
+      <a href={"/login"} className="p2 ">
         <Image
           className=""
           src={"/circle-user.svg"}
