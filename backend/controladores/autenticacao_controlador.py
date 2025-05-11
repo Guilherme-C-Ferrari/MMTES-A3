@@ -12,17 +12,17 @@ class AutenticacaoErros(Enum):
 class AutenticacaoControlador:
     
     @classmethod
-    def autenticar(cls, nome: str, senha: str):
+    def autenticar(cls, nickname: str, senha: str):
 
         lista_de_usuarios = UsuarioControlador.pegar_lista_de_usuarios()
 
-        hash_db = AutenticacaoDB.get_instance().pegar_hash_por_nome(nome, lista_de_usuarios)
+        hash_db = AutenticacaoDB.get_instance().pegar_hash_por_nome(nickname, lista_de_usuarios)
 
         senha = hashlib.md5(senha.encode('utf-8'))
         senha = senha.hexdigest()
         
         if (senha == hash_db):
-            return AutenticacaoDB.get_instance().registrar_sessao(nome)
+            return AutenticacaoDB.get_instance().registrar_sessao(nickname)
         return AutenticacaoErros.USUARIO_OU_SENHA_INCORRETOS
     
     @classmethod

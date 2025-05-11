@@ -41,36 +41,36 @@ async def read_root():
 async def listar_usuarios():
     return UsuarioControlador.listar_todos_os_usuarios()
 
-@app.put("/usuarios/registro/{nome}/{email}/{senha}")
-async def adicionar_usuario(nome: str, email: str, senha: str):
-    return UsuarioControlador.adicionar_usuario(nome, email, senha)
+@app.put("/usuarios/registro/{nome}/{email}/{senha}/{data_de_nascimento}/{bio}/{nickname}")
+async def registrar_usuario(nome: str, email: str, senha: str, data_de_nascimento: str, bio: str, nickname: str):
+    return UsuarioControlador.adicionar_usuario(nome, email, senha, data_de_nascimento, bio, nickname)
 
-@app.patch("/usuarios/edição/{nome}/{email}")
-async def editar_usuario_por_nome(nome: str, email: str, token: str):
-    checagem = AutenticacaoControlador.checar_chave(token, nome)
+@app.patch("/usuarios/edição/{nickname}/{email}")
+async def editar_usuario_por_nickname(nickname: str, email: str, token: str):
+    checagem = AutenticacaoControlador.checar_chave(token, nickname)
     if (checagem == True):
-        return UsuarioControlador.editar_usuario_por_nome(nome, email)
+        return UsuarioControlador.editar_usuario_por_nickname(nickname, email)
     else:
         return {"message": "Não autenticado"}
 
-@app.patch("/usuarios/nova_senha/{nome}/{nova_senha}")
-async def editar_senha_do_usuario(nome: str, nova_senha: str, token: str):
-    checagem = AutenticacaoControlador.checar_chave(token, nome)
+@app.patch("/usuarios/nova_senha/{nickname}/{nova_senha}")
+async def editar_senha_do_usuario(nickname: str, nova_senha: str, token: str):
+    checagem = AutenticacaoControlador.checar_chave(token, nickname)
     if (checagem == True):
-        return UsuarioControlador.editar_senha_do_usuario(nome, nova_senha)
+        return UsuarioControlador.editar_senha_do_usuario(nickname, nova_senha)
     else:
         return {"message": "Não autenticado"}
 
-@app.delete("/usuarios/remoção/{nome}")
-async def remover_usuario_por_nome(nome: str, token: str):
-    checagem = AutenticacaoControlador.checar_chave(token, nome)
+@app.delete("/usuarios/remoção/{nickname}")
+async def remover_usuario_por_nickname(nickname: str, token: str):
+    checagem = AutenticacaoControlador.checar_chave(token, nickname)
     if (checagem == True):
-        return UsuarioControlador.remover_usuario_por_nome(nome)
+        return UsuarioControlador.remover_usuario_por_nickname(nickname)
     else:
         return {"message": "Não autenticado"}
 
 # ========================== Auth
 
-@app.post("/autenticacao/{nome}/{senha}/")
-def autenticar(nome: str, senha: str):
-    return AutenticacaoControlador.autenticar(nome, senha)
+@app.post("/autenticacao/{nickname}/{senha}/")
+def autenticar(nickname: str, senha: str):
+    return AutenticacaoControlador.autenticar(nickname, senha)
