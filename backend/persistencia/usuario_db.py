@@ -36,7 +36,7 @@ class UsuarioDB():
     
     @classmethod
     def inserir_usuario_no_banco(cls, usuario: Usuario):
-        sqlite_insert = """INSERT INTO Usuarios (nome, email, senha, data_de_nascimento, bio, nickname) VALUES (?, ?, ?);"""
+        sqlite_insert = """INSERT INTO Usuarios (nome, email, senha, data_de_nascimento, bio, nickname) VALUES (?, ?, ?, ?, ?, ?);"""
         valores = (usuario._nome, usuario._email, usuario._senha, usuario._data_de_nascimento, usuario._bio, usuario._nickname)
         ConfigDB.executa_sql(sqlite_insert, valores)
         

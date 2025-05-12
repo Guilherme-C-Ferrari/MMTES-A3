@@ -3,6 +3,7 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from backend.controladores.usuario_controlador import UsuarioControlador
 from backend.controladores.autenticacao_controlador import AutenticacaoControlador
+from backend.controladores.obra_controlador import ObraControlador
 import uvicorn
 
 app = FastAPI()
@@ -74,3 +75,21 @@ async def remover_usuario_por_nickname(nickname: str, token: str):
 @app.post("/autenticacao/{nickname}/{senha}/")
 def autenticar(nickname: str, senha: str):
     return AutenticacaoControlador.autenticar(nickname, senha)
+
+# ========================== Obra
+
+@app.get("/obras/lista_de_obras")
+async def listar_obras():
+    return ObraControlador.listar_todas_as_obras()
+
+@app.put("/obras/registro/{titulo}/{descricao}/{autor}/{genero}/{capa}")
+async def registrar_obra(titulo: str, descricao: str, autor: str, genero: str, capa: str):
+    return ObraControlador.adicionar_obra(titulo, descricao, autor, genero, capa)
+
+@app.patch("/obras/edição/{id}/{titulo}/{descricao}/{genero}/{capa}")
+async def editar_obra_por_id(id: int, titulo: str, descricao: str, genero: str, capa: str):
+    return ObraControlador.editar_obra_por_id(id, titulo, descricao, genero, capa)
+
+@app.delete("/obras/remoção/{id}")
+async def remover_obra_por_id(id: int):
+    return ObraControlador.remover_obra_por_id(id)
