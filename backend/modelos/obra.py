@@ -1,3 +1,4 @@
+
 #Classe modelo de uma obra.
 class Obra():
     _id: int
@@ -15,3 +16,4 @@ class Obra():
         self._autor = autor
         self._genero = genero
         self._capa = capa
+        

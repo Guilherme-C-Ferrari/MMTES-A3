@@ -49,7 +49,7 @@ class UsuarioDB():
             return False
         else:
             usuario_alvo : Usuario = lista_filtrada[0]
-            usuario_alvo._email = email
+            usuario_alvo._nickname = nickname
             usuario_alvo._nome = nome
             usuario_alvo._data_de_nascimento = data_de_nascimento
             usuario_alvo._bio = bio

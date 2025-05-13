@@ -1,5 +1,6 @@
 from backend.persistencia.obra_db import ObraDB
 from backend.modelos.obra import Obra
+from backend.persistencia.autenticacao_db import AutenticacaoDB
 import hashlib
 
 # Controlador da obra.
@@ -34,7 +35,10 @@ class ObraControlador:
         return cls.filtrar_lista_de_obras()
     
     @classmethod
-    def adicionar_obra(cls, titulo: str, descricao: str, autor: str, genero: str, capa: str):
+    def adicionar_obra(cls, titulo: str, descricao: str, genero: str, capa: str, chave: str):
+        autor = AutenticacaoDB.get_instance().pegar_nickname_por_chave(chave)
+        if autor is None:
+            raise Exception("Autor não encontrado")        
         j : Obra = Obra(titulo, descricao, autor, genero, capa)
         ObraDB.get_instance().inserir_obra_no_banco(j)
     
