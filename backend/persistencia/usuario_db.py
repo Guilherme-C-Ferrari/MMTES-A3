@@ -17,7 +17,6 @@ class UsuarioDB():
 
     @classmethod
     def popular_do_banco(cls):
-
         # Adicionado campo 'tipo' (admin ou usuario)
         res = ConfigDB.executa_sql("SELECT id, nome, email, senha, data_de_nascimento, bio, nickname, tipo FROM Usuarios", False)
 
@@ -27,10 +26,9 @@ class UsuarioDB():
                 usuario = Admin(r[1], r[2], r[3], r[4], r[5], r[6])
             else:
                 usuario = Usuario(r[1], r[2], r[3], r[4], r[5], r[6])
-            cls.get_instance()._lista_de_usuarios.append(usuario)
-
-        #Cria o admin padrão automaticamente se ele não existir
-        cls.get_instance()._criar_admin_padrao()
+                cls.get_instance()._lista_de_usuarios.append(usuario)
+            #Cria o admin padrão automaticamente se ele não existir
+            cls.get_instance().criar_admin_padrao()
 
 
     @classmethod
@@ -102,4 +100,4 @@ class UsuarioDB():
             nickname=nickname_admin
         )
         cls.inserir_usuario_no_banco(admin)
-        print("🛠️ Conta de administrador padrão criada.")
+       

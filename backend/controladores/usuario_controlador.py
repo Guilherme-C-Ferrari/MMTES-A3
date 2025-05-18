@@ -33,7 +33,7 @@ class UsuarioControlador:
     def adicionar_usuario(cls, nome: str, email: str, senha: str, data_de_nascimento: str = None, bio: str = None, nickname: str = None, tipo: str = "usuario"):
         senha = hashlib.md5(senha.encode('utf-8')).hexdigest()
 
-        # ↓ Escolhe classe de acordo com tipo
+        # Escolhe classe de acordo com tipo
         if tipo == "admin":
             usuario = Admin(nome, email, senha, data_de_nascimento, bio, nickname)
         else:
