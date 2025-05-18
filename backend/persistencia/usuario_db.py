@@ -1,4 +1,5 @@
-from backend.modelos.usuario import Usuario
+import hashlib
+from backend.modelos.usuario import Usuario, Admin
 from backend.persistencia.config_db import ConfigDB
 
 # DB do usuario aplicando singleton. Salva mudanças no banco de dados.
@@ -17,18 +18,20 @@ class UsuarioDB():
     @classmethod
     def popular_do_banco(cls):
 
-        res = ConfigDB.executa_sql("SELECT id, nome, email, senha, data_de_nascimento, bio, nickname FROM Usuarios", False)
+        # Adicionado campo 'tipo' (admin ou usuario)
+        res = ConfigDB.executa_sql("SELECT id, nome, email, senha, data_de_nascimento, bio, nickname, tipo FROM Usuarios", False)
 
         for r in res:
-            j : Usuario = Usuario(
-                nome=r[1],
-                email=r[2],
-                senha=r[3],
-                data_de_nascimento=r[4],
-                bio=r[5],
-                nickname=r[6]
-            )
-            cls.get_instance()._lista_de_usuarios.append(j)
+            tipo = r[7] if len(r) > 7 and r[7] else "usuario"
+            if tipo == "admin":
+                usuario = Admin(r[1], r[2], r[3], r[4], r[5], r[6])
+            else:
+                usuario = Usuario(r[1], r[2], r[3], r[4], r[5], r[6])
+            cls.get_instance()._lista_de_usuarios.append(usuario)
+
+        #Cria o admin padrão automaticamente se ele não existir
+        cls.get_instance()._criar_admin_padrao()
+
 
     @classmethod
     def listar_todos_os_usuarios(cls):
@@ -81,3 +84,22 @@ class UsuarioDB():
         valor = (nickname,)
         sqlite_delete = """DELETE FROM Usuarios where nickname = ?"""
         ConfigDB.executa_sql(sqlite_delete, valor)
+
+    @classmethod
+    def criar_admin_padrao(cls):
+        nickname_admin = "admin"
+        senha_admin = hashlib.md5("admin123".encode('utf-8')).hexdigest()
+
+        ja_existe = any(u for u in cls._lista_de_usuarios if u.get_nickname() == nickname_admin)
+
+        if not ja_existe:
+            admin = Admin(
+            nome="Administrador Padrão",
+            email="admin@sistema.com",
+            senha=senha_admin,
+            data_de_nascimento="2000-01-01",
+            bio="Conta administrativa padrão do sistema.",
+            nickname=nickname_admin
+        )
+        cls.inserir_usuario_no_banco(admin)
+        print("🛠️ Conta de administrador padrão criada.")

@@ -1,5 +1,5 @@
 from backend.persistencia.usuario_db import UsuarioDB
-from backend.modelos.usuario import Usuario
+from backend.modelos.usuario import Usuario, Admin
 import hashlib
 
 # Controlador do usuario.
@@ -30,11 +30,16 @@ class UsuarioControlador:
         return cls.filtrar_lista_de_usuarios()
     
     @classmethod
-    def adicionar_usuario(cls, nome: str, email: str, senha: str, data_de_nascimento: str = None, bio: str = None, nickname: str = None):
-        senha = hashlib.md5(senha.encode('utf-8'))
-        senha = senha.hexdigest()
-        j : Usuario = Usuario(nome, email, senha, data_de_nascimento, bio, nickname)
-        UsuarioDB.get_instance().inserir_usuario_no_banco(j)
+    def adicionar_usuario(cls, nome: str, email: str, senha: str, data_de_nascimento: str = None, bio: str = None, nickname: str = None, tipo: str = "usuario"):
+        senha = hashlib.md5(senha.encode('utf-8')).hexdigest()
+
+        # ↓ Escolhe classe de acordo com tipo
+        if tipo == "admin":
+            usuario = Admin(nome, email, senha, data_de_nascimento, bio, nickname)
+        else:
+            usuario = Usuario(nome, email, senha, data_de_nascimento, bio, nickname)
+
+        UsuarioDB.get_instance().inserir_usuario_no_banco(usuario)
 
     @classmethod
     def editar_usuario_por_nickname(cls, nickname: str, email: str):
