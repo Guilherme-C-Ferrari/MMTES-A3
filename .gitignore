@@ -49,3 +49,4 @@ database/*.dat
 *.sqlite
 *.sqlite3
 *.dat
+/backend

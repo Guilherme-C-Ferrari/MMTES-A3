@@ -1,39 +1,119 @@
+"use client";
 import Header from "@/components/Header";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+
+interface Usuario {
+  nome: string;
+  email: string;
+  data_de_nascimento: string;
+  bio: string;
+  nickname: string;
+}
 
 export default function Perfil() {
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
+  const [obrasCurtidas, setObrasCurtidas] = useState<any[]>([]);
+  const [artistasFavoritos, setArtistasFavoritos] = useState<any[]>([]);
+  const [postagens, setPostagens] = useState<any[]>([]);
+
+  // Supondo que você tenha um token ou nickname salvo no localStorage/cookie
+  useEffect(() => {
+    const nickname = localStorage.getItem("nickname");
+    if (!nickname) return;
+
+    // Buscar dados do usuário
+    fetch(`/usuarios/lista_de_usuarios`)
+      .then(res => res.json())
+      .then(data => {
+        const user = data.find((u: Usuario) => u.nickname === nickname);
+        setUsuario(user);
+      });
+
+    // Buscar obras curtidas, artistas favoritos e postagens (ajuste as rotas conforme seu backend)
+    // Exemplo fictício:
+    fetch(`/usuarios/obras_curtidas/${nickname}`)
+      .then(res => res.json())
+      .then(setObrasCurtidas);
+
+    fetch(`/usuarios/artistas_favoritos/${nickname}`)
+      .then(res => res.json())
+      .then(setArtistasFavoritos);
+
+    fetch(`/usuarios/postagens/${nickname}`)
+      .then(res => res.json())
+      .then(setPostagens);
+  }, []);
+
   return (
     <div className="flex flex-col w-full min-h-screen">
       <Header />
       <main className="flex-grow px-6 py-8">
-        
         <section className="p-6 mb-8">
-          <p className="text-gray-700 leading-relaxed">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc enim neque, blandit et leo imperdiet, pulvinar laoreet orci. Nam non commodo elit. Curabitur pellentesque lorem quis augue suscipit, sed cursus orci lacinia. Etiam vel risus ac quam tincidunt aliquet eu id ligula. Curabitur vulputate erat nisi, a porttitor turpis malesuada eget. Phasellus tristique ornare tempus. Vivamus semper quam turpis, id vehicula diam dapibus imperdiet. Aenean in massa id erat consequat commodo.
-          </p>
+          {usuario ? (
+            <>
+              <h1 className="text-2xl font-bold mb-2">{usuario.nome} (@{usuario.nickname})</h1>
+              <p className="text-gray-700 mb-2">{usuario.email}</p>
+              <p className="text-gray-700 mb-2">Nascimento: {usuario.data_de_nascimento}</p>
+              <p className="text-gray-700 leading-relaxed">{usuario.bio}</p>
+            </>
+          ) : (
+            <p>Carregando perfil...</p>
+          )}
         </section>
 
-        <section className="">
+        <section>
           <h2 className="text-center text-gray-600 text-2xl font-bold mb-8">
             Obras Curtidas
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            {obrasCurtidas.length === 0 ? (
+              <p className="col-span-full text-center text-gray-400">Nenhuma obra curtida.</p>
+            ) : (
+              obrasCurtidas.map((obra, idx) => (
+                <div key={idx} className="bg-white rounded shadow p-4">
+                  <h3 className="font-bold">{obra.titulo}</h3>
+                  <p>{obra.autor}</p>
+                </div>
+              ))
+            )}
+          </div>
         </section>
 
-        <section className="">
+        <section>
           <h2 className="text-center text-gray-600 text-2xl font-bold mb-8 py-8">
             Artistas Favoritos
           </h2>
-          <div className="space-y-6"></div>
+          <div className="space-y-6">
+            {artistasFavoritos.length === 0 ? (
+              <p className="text-center text-gray-400">Nenhum artista favorito.</p>
+            ) : (
+              artistasFavoritos.map((artista, idx) => (
+                <div key={idx} className="bg-white rounded shadow p-4">
+                  <h3 className="font-bold">{artista.nome}</h3>
+                </div>
+              ))
+            )}
+          </div>
         </section>
 
-        <section className="">
+        <section>
           <h2 className="text-center text-gray-600 text-2xl font-bold mb-8">
             Postagens
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            {postagens.length === 0 ? (
+              <p className="col-span-full text-center text-gray-400">Nenhuma postagem.</p>
+            ) : (
+              postagens.map((post, idx) => (
+                <div key={idx} className="bg-white rounded shadow p-4">
+                  <h3 className="font-bold">{post.titulo}</h3>
+                  <p>{post.conteudo}</p>
+                </div>
+              ))
+            )}
+          </div>
         </section>
-
       </main>
     </div>
   );
