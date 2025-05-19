@@ -16,15 +16,15 @@ class ObraControlador:
         
         obras_dto = []
         for obra in obras:
-
-            obras_dto.append({
-                "id": obra._id,
-                "titulo" : obra._titulo,
-                "descricao" : obra._descricao,
-                "autor" : obra._autor,
-                "genero" : obra._genero,
-                "capa" : obra._capa
-            })
+            if getattr(obra, "_validada", False):  # Só adiciona se validada
+                obras_dto.append({
+                    "id": obra._id,
+                    "titulo" : obra._titulo,
+                    "descricao" : obra._descricao,
+                    "autor" : obra._autor,
+                    "genero" : obra._genero,
+                    "capa" : obra._capa
+                })
 
         lista_filtrada : [] = obras_dto
 
@@ -62,5 +62,7 @@ class ObraControlador:
         for obra in lista:
             if obra._id == id:
                 obra._validada = True
+                ObraDB.get_instance().editar_obra_no_banco_por_id(obra._id, obra._titulo, obra._descricao, obra._genero, 
+                obra._capa, True )
                 return True
         return False

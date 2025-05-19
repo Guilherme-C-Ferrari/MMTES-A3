@@ -9,7 +9,6 @@ class Obra():
     _capa: str
     _validada: bool
 
-
     def __init__(self, id: int, titulo: str, descricao: str, autor: str, genero: str, capa: str, validada: bool = False):
         
         self._id = id
