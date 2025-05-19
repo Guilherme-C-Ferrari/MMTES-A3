@@ -54,3 +54,13 @@ class UsuarioControlador:
     @classmethod
     def remover_usuario_por_nickname(cls, nickname: str):
         UsuarioDB.get_instance().remover_usuario_do_banco(nickname)
+    
+    @classmethod
+    def pegar_usuario_por_nickname(cls, nickname: str):
+        usuarios = UsuarioDB.get_instance().listar_todos_os_usuarios()
+        for usuario in usuarios:
+            if usuario._nickname == nickname:
+                return usuario
+        return None
+    
+    

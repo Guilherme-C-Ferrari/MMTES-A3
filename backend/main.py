@@ -93,3 +93,21 @@ async def editar_obra_por_id(id: int, titulo: str, descricao: str, genero: str, 
 @app.delete("/obras/remoção/{id}")
 async def remover_obra_por_id(id: int):
     return ObraControlador.remover_obra_por_id(id)
+
+
+#=========================== Obra Validacao
+
+@app.get("/obras/pendentes_validacao")
+async def listar_obras_pendentes(token: str):
+    if not AutenticacaoControlador.usuario_e_admin(token):
+        raise HTTPException(status_code=403, detail="Acesso restrito a administradores")
+    obras = ObraControlador.listar_obras_pendentes()
+    return [{"id": obra._id, "titulo": obra._titulo, "autor": obra._autor} for obra in obras]
+
+@app.patch("/obras/validar/{id}")
+async def validar_obra(id: int, token: str):
+    if not AutenticacaoControlador.usuario_e_admin(token):
+        raise HTTPException(status_code=403, detail="Acesso restrito a administradores")
+    if ObraControlador.validar_obra(id):
+        return {"message": "Obra validada"}
+    raise HTTPException(status_code=404, detail="Obra não encontrada")

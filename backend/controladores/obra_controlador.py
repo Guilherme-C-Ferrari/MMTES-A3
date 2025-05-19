@@ -39,7 +39,7 @@ class ObraControlador:
         autor = AutenticacaoDB.get_instance().pegar_nickname_por_chave(chave)
         if autor is None:
             raise Exception("Autor não encontrado")        
-        j : Obra = Obra(titulo, descricao, autor, genero, capa)
+        j : Obra = Obra(0,titulo, descricao, autor, genero, capa, False)
         ObraDB.get_instance().inserir_obra_no_banco(j)
     
     @classmethod
@@ -49,3 +49,18 @@ class ObraControlador:
     @classmethod
     def remover_obra_por_id(cls, id: int):
         ObraDB.get_instance().remover_obra_do_banco_por_id(id)
+
+    #========================= Obra Validacao
+
+    @classmethod
+    def listar_obras_pendentes(cls):
+        return [obra for obra in ObraDB.get_instance().listar_todas_as_obras() if not getattr(obra, "_validada", False)]
+    
+    @classmethod
+    def validar_obra(cls, id: int):
+        lista = ObraDB.get_instance().listar_todas_as_obras()
+        for obra in lista:
+            if obra._id == id:
+                obra._validada = True
+                return True
+        return False

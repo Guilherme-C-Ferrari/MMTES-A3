@@ -42,3 +42,15 @@ class AutenticacaoControlador:
         if (checagem_1 == True and checagem_2 == True):
             return True
         return True
+    
+    @classmethod
+    def pegar_nickname_por_token(cls, token: str):
+        return AutenticacaoDB.get_instance().pegar_nickname_por_chave(token)
+    
+    @classmethod
+    def usuario_e_admin(cls, token: str) -> bool:
+        nickname = AutenticacaoDB.get_instance().pegar_nickname_por_chave(token)
+        if not nickname:
+            return False
+        usuario = UsuarioControlador.pegar_usuario_por_nickname(nickname)
+        return usuario and usuario.tipo() == "admin"
