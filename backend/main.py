@@ -148,3 +148,19 @@ async def validar_capitulo(capitulo_id: int, token: str):
     if CapituloControlador.validar_capitulo(capitulo_id):
         return {"message": "Capítulo validado"}
     raise HTTPException(status_code=404, detail="Capítulo não encontrado")
+
+#============================ Administrador
+@app.post("/usuarios/admin")
+async def criar_admin(
+    nome: str,
+    email: str,
+    senha: str,
+    data_de_nascimento: str,
+    bio: str,
+    nickname: str,
+    token: str
+):
+    try:
+        return UsuarioControlador.adicionar_admin(nome, email, senha, data_de_nascimento, bio, nickname, token)
+    except Exception as e:
+        raise HTTPException(status_code=403, detail=str(e))

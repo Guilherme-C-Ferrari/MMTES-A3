@@ -1,5 +1,6 @@
 from backend.persistencia.usuario_db import UsuarioDB
 from backend.modelos.usuario import Usuario, Admin
+from backend.controladores.autenticacao_controlador import AutenticacaoControlador
 import hashlib
 
 # Controlador do usuario.
@@ -63,4 +64,12 @@ class UsuarioControlador:
                 return usuario
         return None
     
-    
+    @classmethod
+    def adicionar_admin(cls, nome: str, email: str, senha: str, data_de_nascimento: str, bio: str, nickname: str, token: str):
+        # Verifica se o token é de um admin
+        if not AutenticacaoControlador.usuario_e_admin(token):
+            raise Exception("Apenas administradores podem criar novos administradores.")
+        senha = hashlib.md5(senha.encode('utf-8')).hexdigest()
+        admin = Admin(nome, email, senha, data_de_nascimento, bio, nickname)
+        UsuarioDB.get_instance().inserir_usuario_no_banco(admin)
+        return {"message": "Administrador criado com sucesso"}
