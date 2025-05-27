@@ -1,7 +1,34 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Header() {
+  const router = useRouter();
+  const [autenticado, setAutenticado] = useState(false);
+
+  useEffect(() => {
+    setAutenticado(!!localStorage.getItem("nickname"));
+  }, []);
+
+  function handleClick() {
+    if (autenticado) {
+      router.push("/perfil");
+    } else {
+      router.push("/login");
+    }
+  }
+
+  function handlePublicarClick(e: React.MouseEvent) {
+    e.preventDefault();
+    if (autenticado) {
+      router.push("/obra_cadastro");
+    } else {
+      router.push("/login");
+    }
+  }
+
   return (
     <header className="w-full flex justify-between items-center py-4 px-50 ">
       <Link href={"/"} className="flex-shrink-0">
@@ -18,9 +45,13 @@ export default function Header() {
         <a href={"/"} className="hover:text-gray-800">
           Categorias
         </a>
-        <a href={"/"} className="hover:text-gray-800">
+        <button
+          onClick={handlePublicarClick}
+          className="hover:text-gray-800 bg-transparent border-none cursor-pointer"
+          style={{ fontSize: "inherit", fontWeight: "inherit" }}
+        >
           Publicar
-        </a>
+        </button>
       </div>
 
       <div className="relative mx-4 flex-grow max-w-md">
@@ -38,7 +69,7 @@ export default function Header() {
           />
         </button>
       </div>
-      <a href={"/login"} className="p2 ">
+      <button onClick={handleClick} className="p2 ">
         <Image
           className=""
           src={"/circle-user.svg"}
@@ -46,7 +77,7 @@ export default function Header() {
           width={40}
           height={40}
         />
-      </a>
+      </button>
     </header>
   );
 }

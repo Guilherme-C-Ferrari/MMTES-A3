@@ -1,42 +1,50 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export default function Login() {
-  const [form, setForm] = useState({
-    nome: "",
-    email: "",
-    senha: "",
-    confirmarSenha: "",
-    data_de_nascimento: "",
-    bio: "",
-    nickname: "",
-  });
-  const [erro, setErro] = useState("");
+export default function Register() {
+  const router = useRouter();
+  const [nickname, setNickname] = useState("");
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [dataNascimento, setDataNascimento] = useState("");
+  const [senha, setSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [mensagem, setMensagem] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErro("");
-    if (form.senha !== form.confirmarSenha) {
-      setErro("As senhas não coincidem.");
+    setMensagem("");
+
+    if (senha !== confirmarSenha) {
+      setMensagem("As senhas não coincidem.");
       return;
     }
+
     try {
-      const res = await fetch(
-        `/usuarios/registro/${encodeURIComponent(form.nome)}/${encodeURIComponent(form.email)}/${encodeURIComponent(form.senha)}/${encodeURIComponent(form.data_de_nascimento)}/${encodeURIComponent(form.bio)}/${encodeURIComponent(form.nickname)}`,
-        { method: "PUT" }
-      );
-      if (!res.ok) {
-        setErro("Erro ao registrar usuário.");
+      const url = `http://localhost:8000/usuarios/registro/${encodeURIComponent(
+        nome
+      )}/${encodeURIComponent(email)}/${encodeURIComponent(senha)}/${encodeURIComponent(
+        dataNascimento
+      )}/${encodeURIComponent("")}/${encodeURIComponent(nickname)}`;
+      const response = await fetch(url, { method: "PUT" });
+
+      if (response.ok) {
+        setMensagem("Registro realizado com sucesso!");
+        setNickname("");
+        setNome("");
+        setEmail("");
+        setDataNascimento("");
+        setSenha("");
+        setConfirmarSenha("");
+        setTimeout(() => router.push("/login"), 1500);
       } else {
-        // Redirecionar ou mostrar sucesso
+        const errorData = await response.json().catch(() => ({}));
+        setMensagem(`Erro: ${errorData.detail || "Falha ao registrar."}`);
       }
-    } catch {
-      setErro("Erro de conexão.");
+    } catch (error) {
+      setMensagem("Erro ao conectar com o servidor.");
     }
   };
 
@@ -53,14 +61,14 @@ export default function Login() {
             height={300}
           />
         </div>
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4" onSubmit={handleRegister}>
           <div>
             <input
               type="text"
               name="nickname"
               placeholder="Nome de usuário"
-              value={form.nickname}
-              onChange={handleChange}
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -70,8 +78,8 @@ export default function Login() {
               type="text"
               name="nome"
               placeholder="Nome completo"
-              value={form.nome}
-              onChange={handleChange}
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -81,8 +89,8 @@ export default function Login() {
               type="email"
               name="email"
               placeholder="Email"
-              value={form.email}
-              onChange={handleChange}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -92,8 +100,8 @@ export default function Login() {
               type="date"
               name="data_de_nascimento"
               placeholder="Data de Nascimento"
-              value={form.data_de_nascimento}
-              onChange={handleChange}
+              value={dataNascimento}
+              onChange={(e) => setDataNascimento(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -103,8 +111,8 @@ export default function Login() {
               type="password"
               name="senha"
               placeholder="Senha"
-              value={form.senha}
-              onChange={handleChange}
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -114,13 +122,23 @@ export default function Login() {
               type="password"
               name="confirmarSenha"
               placeholder="Confirmar Senha"
-              value={form.confirmarSenha}
-              onChange={handleChange}
+              value={confirmarSenha}
+              onChange={(e) => setConfirmarSenha(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
-          {erro && <div className="text-red-500 text-sm">{erro}</div>}
+          {mensagem && (
+            <div
+              className={`text-sm ${
+                mensagem.includes("sucesso")
+                  ? "text-green-600"
+                  : "text-red-500"
+              }`}
+            >
+              {mensagem}
+            </div>
+          )}
           <div>
             <button
               type="submit"
@@ -131,7 +149,10 @@ export default function Login() {
           </div>
         </form>
         <div className="text-center mt-4">
-          <a href="login" className="text-sm text-blue-500 hover:underline">
+          <a
+            href="login"
+            className="text-sm text-blue-500 hover:underline"
+          >
             Possue uma Conta?
           </a>
         </div>

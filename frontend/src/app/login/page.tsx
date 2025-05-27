@@ -1,10 +1,12 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [form, setForm] = useState({ nickname: "", senha: "" });
   const [erro, setErro] = useState("");
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -21,7 +23,8 @@ export default function Login() {
       if (!res.ok) {
         setErro("Usuário ou senha inválidos.");
       } else {
-        // Redirecionar ou salvar token
+        localStorage.setItem("nickname", form.nickname);
+        router.push("/perfil");
       }
     } catch {
       setErro("Erro de conexão.");
