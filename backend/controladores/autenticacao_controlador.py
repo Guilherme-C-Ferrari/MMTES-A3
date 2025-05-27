@@ -1,5 +1,6 @@
 from backend.persistencia.autenticacao_db import AutenticacaoDB
 from backend.controladores.usuario_controlador import UsuarioControlador
+from backend.persistencia.obra_db import ObraDB
 from enum import Enum
 import hashlib
 
@@ -42,3 +43,27 @@ class AutenticacaoControlador:
         if (checagem_1 == True and checagem_2 == True):
             return True
         return True
+    
+    @classmethod
+    def pegar_nickname_por_token(cls, token: str):
+        return AutenticacaoDB.get_instance().pegar_nickname_por_chave(token)
+    
+    @classmethod
+    def usuario_e_admin(cls, token: str) -> bool:
+        nickname = AutenticacaoDB.get_instance().pegar_nickname_por_chave(token)
+        if not nickname:
+            return False
+        usuario = UsuarioControlador.pegar_usuario_por_nickname(nickname)
+        return usuario and usuario.tipo() == "admin"
+    
+
+    #Validação de autor e obra para implementação de capitulos
+    @classmethod
+    def usuario_e_autor_da_obra(cls, token: str, obra_id: int) -> bool:
+        nickname = AutenticacaoDB.get_instance().pegar_nickname_por_chave(token)
+        if not nickname:
+            return False
+        obra = next((o for o in ObraDB.get_instance().listar_todas_as_obras() if o._id == obra_id), None)
+        if not obra:
+            return False
+        return obra._autor == nickname

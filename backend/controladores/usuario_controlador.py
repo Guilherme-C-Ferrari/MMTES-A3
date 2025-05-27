@@ -1,5 +1,6 @@
 from backend.persistencia.usuario_db import UsuarioDB
-from backend.modelos.usuario import Usuario
+from backend.modelos.usuario import Usuario, Admin
+from backend.controladores.autenticacao_controlador import AutenticacaoControlador
 import hashlib
 
 # Controlador do usuario.
@@ -30,11 +31,16 @@ class UsuarioControlador:
         return cls.filtrar_lista_de_usuarios()
     
     @classmethod
-    def adicionar_usuario(cls, nome: str, email: str, senha: str, data_de_nascimento: str = None, bio: str = None, nickname: str = None):
-        senha = hashlib.md5(senha.encode('utf-8'))
-        senha = senha.hexdigest()
-        j : Usuario = Usuario(nome, email, senha, data_de_nascimento, bio, nickname)
-        UsuarioDB.get_instance().inserir_usuario_no_banco(j)
+    def adicionar_usuario(cls, nome: str, email: str, senha: str, data_de_nascimento: str = None, bio: str = None, nickname: str = None, tipo: str = "usuario"):
+        senha = hashlib.md5(senha.encode('utf-8')).hexdigest()
+
+        # Escolhe classe de acordo com tipo
+        if tipo == "admin":
+            usuario = Admin(nome, email, senha, data_de_nascimento, bio, nickname)
+        else:
+            usuario = Usuario(nome, email, senha, data_de_nascimento, bio, nickname)
+
+        UsuarioDB.get_instance().inserir_usuario_no_banco(usuario)
 
     @classmethod
     def editar_usuario_por_nickname(cls, nickname: str, email: str):
@@ -49,3 +55,21 @@ class UsuarioControlador:
     @classmethod
     def remover_usuario_por_nickname(cls, nickname: str):
         UsuarioDB.get_instance().remover_usuario_do_banco(nickname)
+    
+    @classmethod
+    def pegar_usuario_por_nickname(cls, nickname: str):
+        usuarios = UsuarioDB.get_instance().listar_todos_os_usuarios()
+        for usuario in usuarios:
+            if usuario._nickname == nickname:
+                return usuario
+        return None
+    
+    @classmethod
+    def adicionar_admin(cls, nome: str, email: str, senha: str, data_de_nascimento: str, bio: str, nickname: str, token: str):
+        # Verifica se o token é de um admin
+        if not AutenticacaoControlador.usuario_e_admin(token):
+            raise Exception("Apenas administradores podem criar novos administradores.")
+        senha = hashlib.md5(senha.encode('utf-8')).hexdigest()
+        admin = Admin(nome, email, senha, data_de_nascimento, bio, nickname)
+        UsuarioDB.get_instance().inserir_usuario_no_banco(admin)
+        return {"message": "Administrador criado com sucesso"}
