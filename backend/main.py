@@ -161,6 +161,8 @@ async def criar_admin(
     token: str
 ):
     try:
-        return UsuarioControlador.adicionar_admin(nome, email, senha, data_de_nascimento, bio, nickname, token)
+        if not AutenticacaoControlador.usuario_e_admin(token):
+            raise Exception("Apenas administradores podem criar novos administradores.")
+        return UsuarioControlador.adicionar_admin(nome, email, senha, data_de_nascimento, bio, nickname)
     except Exception as e:
         raise HTTPException(status_code=403, detail=str(e))
