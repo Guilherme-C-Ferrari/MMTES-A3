@@ -1,9 +1,7 @@
+from backend.controladores.autenticacao_controlador import AutenticacaoControlador
 from backend.persistencia.capitulo_db import CapituloDB
 from backend.persistencia.obra_db import ObraDB
 from backend.modelos.capitulo import Capitulo
-from backend.persistencia.autenticacao_db import AutenticacaoDB
-from backend.controladores.autenticacao_controlador import AutenticacaoControlador
-
 
 class CapituloControlador:
 

@@ -1,7 +1,6 @@
+from backend.persistencia.autenticacao_db import AutenticacaoDB
 from backend.persistencia.obra_db import ObraDB
 from backend.modelos.obra import Obra
-from backend.persistencia.autenticacao_db import AutenticacaoDB
-import hashlib
 
 # Controlador da obra.
 class ObraControlador:

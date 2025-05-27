@@ -1,5 +1,5 @@
-from backend.persistencia.autenticacao_db import AutenticacaoDB
 from backend.controladores.usuario_controlador import UsuarioControlador
+from backend.persistencia.autenticacao_db import AutenticacaoDB
 from backend.persistencia.obra_db import ObraDB
 from enum import Enum
 import hashlib
